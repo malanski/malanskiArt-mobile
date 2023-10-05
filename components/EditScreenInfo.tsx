@@ -1,55 +1,113 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-
+import React, { SetStateAction } from 'react';
+import { FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { ProductCard } from './ProductCard';
 import Colors from '../constants/Colors';
 import { ExternalLink } from './ExternalLink';
 import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
 
 
-export default function EditScreenInfo({ path }: { path: string }) {
+interface IPropsAllData {
+  allPropData: ArrayLike<any>
+  currentDataSourceName: string
+  propDataSource: {
+    name: string;
+    data: {
+        id: number;
+        name: string;
+        description: string;
+        options: string[];
+        iconSrc: any;
+        imgSrc: any[];
+        price: number;
+        buyLink: string;
+    }[];
+  }[]
+  propToggleDataSource: (index: SetStateAction<number>) => void
+}
+
+
+export default function EditScreenInfo({ allPropData, currentDataSourceName, propDataSource, propToggleDataSource }: IPropsAllData) {
   return (
     <View>
-      <View style={styles.getStartedContainer}>
+      <View style={styles.ContentContainer}>
+        {/* <Text
+          style={styles.getStartedText}
+          lightColor="rgba(0,0,0,0.8)"
+          darkColor="rgba(255,255,255,0.8)">
+          Malanskiart Store
+        </Text>
+        <View style={styles.helpContainer}>
+          <ExternalLink
+            style={styles.helpLink}
+            href="https://www.redbubble.com/people/malanskiart/explore">
+            <Text style={styles.helpLinkText} lightColor={Colors.light.tint}>
+              Tap here if you want to buy directly at the main store
+            </Text>
+          </ExternalLink>
+        </View> */}
+        <FlatList
+          contentContainerStyle={{
+            paddingBottom: 32
+            // flexDirection: 'row',
+            // flexWrap:'wrap'
+            // justifyContent: 'space-between'
+          }}
+          data={propDataSource}
+          horizontal={false}
+          numColumns={2}
+          keyExtractor={item => item.name}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              style={styles.navBar}
+              onPress={() => propToggleDataSource(index)}>
+              <Text style={styles.navBarText}>{item.name}</Text>
+            </TouchableOpacity>
+
+          )}
+        />
         <Text
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
           darkColor="rgba(255,255,255,0.8)">
-          Open up the code for this screen:
+          {currentDataSourceName}
         </Text>
 
-        <View
-          style={[styles.codeHighlightContainer, styles.homeScreenFilename]}
-          darkColor="rgba(255,255,255,0.05)"
-          lightColor="rgba(0,0,0,0.05)">
-          <MonoText>{path}</MonoText>
-        </View>
-
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Change any of the text, save the file, and your app will automatically update.
-        </Text>
-      </View>
-
-      <View style={styles.helpContainer}>
-        <ExternalLink
-          style={styles.helpLink}
-          href="https://docs.expo.io/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet">
-          <Text style={styles.helpLinkText} lightColor={Colors.light.tint}>
-            Tap here if your app doesn't automatically update after making changes
-          </Text>
-        </ExternalLink>
+        <FlatList
+          horizontal={false}
+          numColumns={2}
+          data={allPropData}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({ item }) => (
+            <ProductCard
+              srcIcon={item.iconSrc}
+              srcImg={item.imgSrc}
+              itemName={item.name}
+              itemPrice={item.price} />
+          )}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  getStartedContainer: {
+  ContentContainer: {
     alignItems: 'center',
-    marginHorizontal: 50,
+    marginHorizontal: 8,
+  },
+  navBar: {
+    width: '47%',
+    borderWidth: 1,
+    borderColor: 'rgb(96, 209, 100)',
+    borderRadius: 4,
+    padding: 4,
+    margin: 4
+
+  },
+  navBarText: {
+    textTransform: 'uppercase',
+    textAlign: 'center'
   },
   homeScreenFilename: {
     marginVertical: 7,
@@ -74,4 +132,5 @@ const styles = StyleSheet.create({
   helpLinkText: {
     textAlign: 'center',
   },
+
 });
